@@ -262,14 +262,17 @@
               </ul>
             </li>
             <!-- Components -->
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">Components</span></li>
-            <!-- Cards -->
-            <li class="menu-item">
-              <a href="cards-basic.html" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Cards</div>
-              </a>
-            </li>
+            {% if not is_popup and is_nav_sidebar_enabled %}
+              {% block nav-sidebar %}
+                <li class="menu-header small text-uppercase"><span class="menu-header-text">Components</span></li>
+                <!-- Cards -->
+                <li class="menu-item">
+                  <a href="cards-basic.html" class="menu-link">
+                    <div data-i18n="Basic">{% include "admin/nav_sidebar.html" %}</div>
+                  </a>
+                </li>
+              {% endblock %}
+            {% endif %}
             <!-- User interface -->
             <li class="menu-item">
               <a href="javascript:void(0)" class="menu-link menu-toggle">
@@ -520,6 +523,20 @@
                 <!-- User -->
                 {% block usertools %}
                   {% if has_permission %}
+                    {% block userlinks %}
+                      {% if site_url %}
+                        <a href="{{ site_url }}">{% translate 'View site' %}</a> 
+                      {% endif %}
+                      {% if user.is_active and user.is_staff %}
+                        {% url 'django-admindocs-docroot' as docsroot %}
+                        {% if docsroot %}
+                          <a href="{{ docsroot }}">{% translate 'Documentation' %}</a> 
+                        {% endif %}
+                      {% endif %}
+                      {% if user.has_usable_password %}
+                        <a href="{% url 'admin:password_change' %}">{% translate 'Change password' %}</a>
+                      {% endif %}
+                    {% endblock %}
                     <li class="nav-item navbar-dropdown dropdown-user dropdown">
                       <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                         <div class="avatar avatar-online">
